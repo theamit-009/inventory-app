@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Phone Changer</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        body {
+            padding-top: 60px;
+        }
+    </style>
+    <script>
+        $(function() {
+            $("#addproductform").submit(function(event) {
+                event.preventDefault();
+
+                var errorMessage = $("#errorMessage");
+                var error = $("#error");
+                error.hide();
+
+                $("#message").hide();
+
+                var productname = $("#productname").val();
+                var quantity = $("#quantity").val();
+                var costperproduct = $("#costperproduct").val();
+               
+
+                if (productname.length == 0 || quantity.length == 0 || costperproduct.length == 0) {
+                    errorMessage.text("All of the fields are required.");
+                    error.show();
+                }
+                else {
+                    $.ajax({
+                        url: event.target.action,
+                        method: event.target.method,
+                        data: JSON.stringify({
+                            productname: productname,
+                            quantity: quantity,
+                            costperproduct: costperproduct
+                        }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function(data) {
+                            $("#productname").val("");
+                            $("#quantity").val("");
+                            $("#costperproduct").val("");
+                            $("#messageMessage").text("Record updated!");
+                            $("#message").show();
+                        },
+                        error: function(err) {
+                            errorMessage.text(err.responseJSON.error);
+                            error.show();
+                        }
+                    })
+                }
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Inventory Management</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <form id="addproductform" action="/update" method="post" style="width: 400px">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Add Products Information</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="firstName">Product Name</label>
+                        <input type="text" class="form-control" id="productname" placeholder="For verification" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Quantity</label>
+                        <input type="text" class="form-control" id="quantity" placeholder="For verification" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Cost Per Product</label>
+                        <input type="email" class="form-control" id="costperproduct" placeholder="For verification" required>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div id="message" class="alert alert-info" role="alert" style="display: none;">
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        <span id="messageMessage"></span>
+                    </div>
+                    <div id="error" class="alert alert-danger" role="alert" style="display: none;">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        <span class="sr-only">Error:</span>
+                        <span id="errorMessage"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Products</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
